@@ -1,138 +1,213 @@
 # MeetFlow
 
-**MeetFlow** turns a prerecorded meeting into an approved, executable workflow.
+**Turn meeting conversations into actionable work.**
 
-This repository implements the MeetFlow application according to the specifications in [IMPLEMENTATION.md](file:///c:/_New%20Drive/meetflow/IMPLEMENTATION.md).
+MeetFlow is an AI-powered meeting assistant that takes a meeting recording, understands what was discussed, and turns it into structured tasks, decisions, and follow-ups — ready for review and approval.
+
+Instead of leaving important action items buried in long transcripts, MeetFlow helps teams move from *what was discussed* to *what needs to be done*.
+
+> **Recordings in. Workflows out.**
 
 ---
 
-## Milestone 1: Backend Foundation
+## The Problem
 
-Milestone 1 establishes the production-ready FastAPI foundation, SQLite persistence layer with SQLAlchemy models, environment configuration, automated tests, and health checking endpoints.
+Meetings generate valuable information, but important decisions and responsibilities are often lost in lengthy recordings or scattered notes.
 
-### Repository Layout
+Someone still has to listen to the recording, identify action items, figure out who is responsible, and manually organize the follow-ups.
+
+MeetFlow reduces this manual effort by using AI to process meeting conversations and prepare actionable workflows.
+
+## What MeetFlow Does
+
+### 1. Upload Meeting Recordings
+Upload a prerecorded meeting audio file and let MeetFlow process the conversation. The current version focuses on uploaded recordings, with live meeting integrations planned for the future.
+
+### 2. Convert Speech into Transcripts
+MeetFlow uses Google Gemini to transcribe meeting audio into readable, speaker-aware conversation segments, making discussions easier to review and search through.
+
+### 3. Understand the Conversation
+Using Google Gemma, MeetFlow analyzes the transcript to identify meaningful information, including:
+- Key discussion points
+- Decisions made during the meeting
+- Tasks and action items
+- Responsible participants
+- Deadlines and follow-ups
+
+### 4. Turn Decisions into Workflows
+Extracted information is organized into structured action items instead of remaining buried in a transcript.
+
+### 5. Review Before Execution
+AI-generated actions are not executed automatically. Users can review, edit, approve, or reject proposed actions before execution.
+
+### 6. Track Action Status
+MeetFlow maintains action statuses and execution history, helping users understand what has been approved and what has been processed.
+
+---
+
+## How It Works
+
+1. **Upload** — Add a prerecorded meeting audio file.
+2. **Transcribe** — Gemini converts the audio into a transcript.
+3. **Analyze** — Gemma identifies decisions, tasks, and follow-ups.
+4. **Review** — Check and edit the proposed actions.
+5. **Approve** — Explicitly authorize actions before execution.
+6. **Track** — View action status and execution history.
+
+---
+
+## Built With
+
+| Layer | Technologies |
+|---|---|
+| Frontend | React, Vite, Tailwind CSS |
+| Backend | Python, FastAPI, Uvicorn |
+| Database | SQLite, SQLAlchemy |
+| Audio Transcription | Google Gemini API |
+| Workflow Extraction | Google Gemma |
+| Testing | Pytest |
+| Development | Git, GitHub |
+
+---
+
+## Architecture
+
+MeetFlow separates the user interface, API, AI processing, and action execution into distinct layers.
 
 ```text
-meetflow/
-├── IMPLEMENTATION.md         # Full project implementation plan
-├── README.md                 # Project documentation and Windows run instructions
-├── .env.example              # Example environment configuration
-├── .gitignore                # Safe Git exclusions
-├── backend/
-│   ├── app/
-│   │   ├── __init__.py
-│   │   ├── main.py           # FastAPI entrypoint with CORS, lifespan & health routes
-│   │   ├── core/
-│   │   │   ├── __init__.py
-│   │   │   └── config.py     # Pydantic BaseSettings environment configuration
-│   │   ├── database/
-│   │   │   ├── __init__.py
-│   │   │   └── session.py    # SQLAlchemy SQLite engine, sessionmaker & get_db dependency
-│   │   ├── models/
-│   │   │   ├── __init__.py
-│   │   │   ├── base.py       # DeclarativeBase with timestamp mixin
-│   │   │   ├── meeting.py    # Meeting SQLAlchemy model
-│   │   │   └── action.py     # Action SQLAlchemy model (tasks, emails, reminders)
-│   │   ├── schemas/
-│   │   │   ├── __init__.py
-│   │   │   ├── health.py     # Health response schemas
-│   │   │   ├── meeting.py    # Meeting Pydantic validation schemas
-│   │   │   └── action.py     # Action Pydantic validation schemas
-│   │   ├── api/
-│   │   │   ├── __init__.py
-│   │   │   ├── router.py     # Central API routing
-│   │   │   └── v1/
-│   │   │       ├── __init__.py
-│   │   │       └── health.py # Health check route handler with DB verification
-│   │   └── services/
-│   │       └── __init__.py   # Business logic package (for future milestones)
-│   └── requirements.txt      # Python dependencies
-└── tests/
-    ├── __init__.py
-    ├── conftest.py           # In-memory SQLite fixtures and TestClient setup
-    └── test_health.py        # Automated tests for health endpoints and DB persistence
+                ┌──────────────────────┐
+                │     React Frontend   │
+                │  Upload • Review     │
+                │  Approve • Track     │
+                └──────────┬───────────┘
+                           │
+                           ▼
+                ┌──────────────────────┐
+                │     FastAPI Backend  │
+                │  Meeting & Workflow  │
+                │      Management      │
+                └──────────┬───────────┘
+                           │
+                ┌──────────▼───────────┐
+                │   AI Processing      │
+                │                      │
+                │ Gemini: Transcription│
+                │ Gemma: Extraction    │
+                └──────────┬───────────┘
+                           │
+                           ▼
+                ┌──────────────────────┐
+                │   Approval Layer     │
+                │  Review • Edit       │
+                │  Approve • Reject    │
+                └──────────┬───────────┘
+                           │
+                           ▼
+                ┌──────────────────────┐
+                │  Execution Layer     │
+                │  Status & History    │
+                └──────────────────────┘
 ```
+
+SQLite stores meeting and action data, while the backend manages processing, validation, approval, and execution states.
 
 ---
 
-## Windows Setup and Run Instructions
+## Human Approval Comes First
+
+MeetFlow follows a simple principle: **AI can propose actions, but the user decides what gets executed.**
+
+Extracted tasks and workflows remain under user control. Actions must pass through the approval process before execution.
+
+The current MVP uses a mock execution provider to demonstrate this lifecycle safely. It does not send real emails or create tasks in external applications.
+
+---
+
+## Current Status
+
+MeetFlow currently supports:
+- Prerecorded audio upload
+- Gemini-powered audio transcription
+- Gemma-powered workflow extraction
+- Meeting and action management
+- Editing, approving, and rejecting proposed actions
+- Mock action execution and execution history
+
+### Future Scope
+- Live meeting integrations with platforms such as Zoom and Google Meet
+- Real task-management integrations
+- Email and calendar automation
+- Additional workflow integrations
+
+---
+
+## Getting Started
 
 ### Prerequisites
-- Python 3.10+ (tested on Python 3.14)
-- Windows PowerShell or Command Prompt
+- Python 3.10+
+- Node.js and npm
+- Google AI Studio API key
 
-### Step 1: Clone or Navigate to Project Directory
-```powershell
-cd "c:\_New Drive\meetflow"
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/atharvshukla24/MeetFlow.git
+cd MeetFlow
 ```
 
-### Step 2: Create and Activate Virtual Environment
-Using PowerShell:
+### 2. Configure the Backend
+
 ```powershell
 python -m venv venv
 .\venv\Scripts\Activate.ps1
-```
-*(If PowerShell execution policy prevents running scripts, run `Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass` or activate using Command Prompt: `venv\Scripts\activate.bat`)*
-
-### Step 3: Install Dependencies
-```powershell
 pip install -r backend/requirements.txt
-```
-
-### Step 4: Configure Environment Variables
-Copy `.env.example` to `.env`:
-```powershell
 Copy-Item .env.example .env
 ```
 
-### Step 5: Run the Server
-Launch the FastAPI development server:
+Add your Google AI Studio API key to the root `.env` file and configure the required providers.
+
+Never commit your `.env` file or expose your API key.
+
+### 3. Start the Backend
+
+From the project root:
+
 ```powershell
-python -m uvicorn app.main:app --app-dir backend --reload --port 8000
+python -m uvicorn app.main:app --app-dir backend --reload --host 127.0.0.1 --port 8000
 ```
 
-The server will be available at:
-- **API Root**: [http://127.0.0.1:8000/](http://127.0.0.1:8000/)
-- **Health Check**: [http://127.0.0.1:8000/health](http://127.0.0.1:8000/health) or [http://127.0.0.1:8000/api/v1/health](http://127.0.0.1:8000/api/v1/health)
-- **Interactive Swagger Docs**: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
-- **ReDoc Documentation**: [http://127.0.0.1:8000/redoc](http://127.0.0.1:8000/redoc)
+Backend API: `http://127.0.0.1:8000`
+
+API documentation: `http://127.0.0.1:8000/docs`
+
+### 4. Start the Frontend
+
+Open another terminal:
+
+```powershell
+cd frontend
+npm install
+npm run dev
+```
+
+Open the local URL shown by Vite, usually `http://localhost:5173`.
 
 ---
 
-## Verifying the Health Endpoint
+## Running Tests
 
-### In PowerShell:
-```powershell
-Invoke-RestMethod -Uri "http://127.0.0.1:8000/health" -Method Get | ConvertTo-Json
-```
+From the project root:
 
-Expected output:
-```json
-{
-  "status": "healthy",
-  "app": "MeetFlow API",
-  "version": "0.1.0",
-  "database": "connected",
-  "environment": "development"
-}
-```
-
-### With cURL:
-```powershell
-curl http://127.0.0.1:8000/health
-```
-
----
-
-## Running Automated Tests
-
-Run the full pytest suite from the project root:
-```powershell
+```bash
 python -m pytest -v
 ```
 
-This verifies:
-1. `GET /` root welcome endpoint
-2. `GET /health` root health check and status contract
-3. `GET /api/v1/health` v1 health check
-4. SQLAlchemy SQLite model persistence and relationships (Meeting <-> Action)
+---
+
+## Project
+
+**MeetFlow — From conversations to execution.**
+
+Built with React, FastAPI, Gemini, and Gemma.
+
+[GitHub Repository](https://github.com/atharvshukla24/MeetFlow)
