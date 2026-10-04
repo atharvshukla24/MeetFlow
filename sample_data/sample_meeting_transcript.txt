@@ -1,0 +1,9 @@
+[SYNTHETIC SAMPLE TRANSCRIPT — DEMO ONLY]
+[00:00:02] Sarah: Good morning everyone, let's begin our project sync. Atharv, could you give us an update on the backend API implementation?
+[00:00:15] Atharv: Hi Sarah. The core database models and routing are in place. I will complete the backend API by Friday.
+[00:00:30] Sarah: Thanks Atharv, that sounds great. Atharv, please also prepare an email summary for the engineering team once the tests pass.
+[00:00:45] Atharv: Will do, I'll draft that email as soon as the test suite is green.
+[00:00:58] Sarah: Next item: we explicitly decided to deploy the beta release to the staging environment next Monday at 10 AM.
+[00:01:14] Bob: Quick question regarding the database—did we finalize whether to run the indexing migration during off-peak hours?
+[00:01:28] Sarah: That remains an open question. Let's discuss and finalize that in Thursday's architecture review.
+[00:01:40] Atharv: Sounds like a plan. Thanks everyone.
